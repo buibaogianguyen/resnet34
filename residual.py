@@ -33,4 +33,4 @@ class ResidualBlock(nn.Module):
         out += self.shortcut(res)
         out = self.relu(out)
 
-        return out+res
+        return out
