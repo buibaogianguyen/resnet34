@@ -8,10 +8,10 @@ class ResNet34(nn.Module):
 
         self.in_channels = 64
         
-        self.conv1 = nn.Conv2d(in_channels=self.in_channels, kernel_size=7, stride=2)
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=7, stride=2, padding=3)
         self.bn1 = nn.BatchNorm2d(self.in_channels)
         self.relu = nn.ReLU(inplace=True)
-        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2)
+        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
         self.layer1 = self._make_layer(64, ResidualBlock, 3, stride=1)
         self.layer2 = self._make_layer(128, ResidualBlock, 4)
