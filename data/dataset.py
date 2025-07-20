@@ -35,6 +35,3 @@ transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=mean.tolist(), std=std.tolist())
 ])
-
-dataset = ds.CIFAR10(root='./data', train=True, download=False, transform=transform)
-
