@@ -40,13 +40,15 @@ def main():
     # HYPERPARAMS
     epochs = 50
     batch_size = 128
-    lr = 0.001
+    lr = 0.1
     num_classes = 10
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = ResNet34(ResidualBlock, [3,4,6,3], num_classes)
-    criterion = optim.SGD(lr = lr)
+    criterion = nn.CrossEntropyLoss
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.0001)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
 
     train_data = ds.CIFAR10(root='./data', train=True, download=False, transform=transform)
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=4)
@@ -56,7 +58,12 @@ def main():
 
 
     for epoch in range(epochs):
-        train_loss, train_acc = train(model, train_loader, optim, criterion, epoch, device)
+        train_loss, train_acc = train(model, train_loader, criterion, epoch, device)
+        val_loss, val_acc = train(model, val_loader,  optim=optimizer, criterion=criterion, epoch=epoch, device=device)
+        scheduler.step()
 
+        print(f'Epoch {epoch+1}/{epochs}\nTraining loss: {train_loss}\nTraining accuracy: {train_acc}\nValidation loss:{val_loss}\nValidation accuracy: {val_acc}')
+
+    
 
 
