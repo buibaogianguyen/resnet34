@@ -24,6 +24,16 @@ def train(model, train_loader, optim, criterion, epoch, device):
         loss.backward()
         optim.step()
 
+        cur_loss += loss.item()
+        total += labels.size(0)
+        predicted_classes = torch.argmax(outputs, dim=1)
+        num_correct = (predicted_classes == labels).sum().item()
+        correct += num_correct
+
+    epoch_loss = cur_loss/len(train_loader)
+    epoch_acc = 100*correct/total
+    return epoch_loss, epoch_acc
+
 def main():
     os.makedirs("checkpoints", exist_ok=True)
 
