@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm
 
 def mean_std(dataset, batch_size):
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=2)
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
     channel_sum = np.zeros(3)
     channel_sum_sq = np.zeros(3)
@@ -21,17 +21,21 @@ def mean_std(dataset, batch_size):
     std = np.sqrt((channel_sum_sq / pixels) - (mean ** 2))
     return mean, std
 
-transform = transforms.Compose([
-    transforms.Resize(224),
-    transforms.ToTensor(),    
-])
+def get_transform():
+    transform = transforms.Compose([
+        transforms.Resize(224),
+        transforms.ToTensor(),    
+    ])
 
-dataset = ds.CIFAR10(root='./data', train=True, download=True, transform=transform)
+    dataset = ds.CIFAR10(root='./data', train=True, download=True, transform=transform)
 
-mean, std = mean_std(dataset, batch_size=128)
+    mean, std = mean_std(dataset, batch_size=128)
 
-transform = transforms.Compose([
-    transforms.Resize(224),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=mean.tolist(), std=std.tolist())
-])
+    transform = transforms.Compose([
+        transforms.Resize(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean.tolist(), std=std.tolist())
+    ])
+
+if __name__ == "__main__":
+    transform = get_transform()
