@@ -46,11 +46,11 @@ def valid(model, val_loader, optim, criterion, epoch, device):
             outputs = model(inputs)
             loss = criterion(outputs, labels)
 
-            curr_loss += loss.item()
-            total = labels.size(0)
+            cur_loss += loss.item()
+            total += labels.size(0)
             predicted_classes = torch.argmax(outputs, dim=1)
             num_correct = (predicted_classes == labels).sum().item()
-            orrect += num_correct
+            correct += num_correct
 
     val_loss = cur_loss / len(val_loader)
     val_acc = 100*correct/total
@@ -85,7 +85,7 @@ def main():
     best_val_acc = 0.0
 
     for epoch in range(epochs):
-        train_loss, train_acc = train(model, train_loader, criterion, epoch, device)
+        train_loss, train_acc = train(model, train_loader, optimizer, criterion, epoch, device)
         val_loss, val_acc = valid(model, val_loader,  optim=optimizer, criterion=criterion, epoch=epoch, device=device)
         scheduler.step()
 

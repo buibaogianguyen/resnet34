@@ -3,18 +3,19 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import numpy as np
 from tqdm import tqdm
+import torch
 
 def mean_std(dataset, batch_size):
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
-    channel_sum = np.zeros(3)
-    channel_sum_sq = np.zeros(3)
+    channel_sum = torch.zeros(3)
+    channel_sum_sq = torch.zeros(3)
     pixels = 0
 
     for imgs, _ in tqdm(loader):
         channel_sum += imgs.sum(dim=[0,2,3])
         channel_sum_sq += (imgs**2).sum(dim=[0,2,3])
-        pixels += imgs.shape[1] * imgs.shape[2]
+        pixels += imgs.shape[0] * imgs.shape[1] * imgs.shape[2]
 
     # image dataset stats formula
     mean = channel_sum / pixels
