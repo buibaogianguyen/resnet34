@@ -8,6 +8,7 @@ import os
 from model.resnet import ResNet34
 from model.residual import ResidualBlock
 from data.dataset import get_transform
+import json
 
 def train(model, train_loader, optim, criterion, epoch, device):
     model.train()
@@ -61,8 +62,10 @@ def valid(model, val_loader, optim, criterion, epoch, device):
 def main():
     os.makedirs("checkpoints", exist_ok=True)
 
+    stats_path = "stats.json"
+
     # HYPERPARAMS
-    epochs = 50
+    epochs = 10
     batch_size = 128
     lr = 0.1
     num_classes = 10
@@ -71,8 +74,8 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = ResNet34(ResidualBlock, [3,4,6,3], num_classes)
-    criterion = nn.CrossEntropyLoss
+    model = ResNet34(ResidualBlock, [3,4,6,3], num_classes).to(device)
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.0001)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
 
@@ -83,6 +86,9 @@ def main():
     val_loader = DataLoader(val_data, batch_size=batch_size, shuffle=False, num_workers=4)
 
     best_val_acc = 0.0
+    if os.path.exists(stats_path):
+        with open(stats_path, 'r') as f:
+            best_val_acc = json.load(f)
 
     for epoch in range(epochs):
         train_loss, train_acc = train(model, train_loader, optimizer, criterion, epoch, device)
@@ -95,6 +101,10 @@ def main():
             best_val_acc = val_acc
             torch.save(model.state_dict(), 'checkpoints/resnet34.pth')
             print(f'New best model with validation accuracy {best_val_acc} saved at run/checkpoints/resnet34.py')
+
+            with open(stats_path, 'w') as f:
+                json.dump(best_val_acc, f, indent=4)
+            print(f'Updated {stats_path} with all-time best validation loss: {best_val_acc:.4f}')
 
 if __name__ == "__main__":
     main()

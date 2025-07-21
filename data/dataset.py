@@ -15,20 +15,20 @@ def mean_std(dataset, batch_size):
     for imgs, _ in tqdm(loader):
         channel_sum += imgs.sum(dim=[0,2,3])
         channel_sum_sq += (imgs**2).sum(dim=[0,2,3])
-        pixels += imgs.shape[0] * imgs.shape[1] * imgs.shape[2]
+        pixels += imgs.shape[0] * imgs.shape[2] * imgs.shape[3]
 
     # image dataset stats formula
     mean = channel_sum / pixels
-    std = np.sqrt((channel_sum_sq / pixels) - (mean ** 2))
+    std = torch.sqrt((channel_sum_sq / pixels) - (mean ** 2))
     return mean, std
 
 def get_transform():
-    transform = transforms.Compose([
+    temp_transform = transforms.Compose([
         transforms.Resize(224),
         transforms.ToTensor(),    
     ])
 
-    dataset = ds.CIFAR10(root='./data', train=True, download=True, transform=transform)
+    dataset = ds.CIFAR10(root='./data', train=True, download=True, transform=temp_transform)
 
     mean, std = mean_std(dataset, batch_size=128)
 
@@ -37,6 +37,8 @@ def get_transform():
         transforms.ToTensor(),
         transforms.Normalize(mean=mean.tolist(), std=std.tolist())
     ])
+
+    return transform
 
 if __name__ == "__main__":
     transform = get_transform()
