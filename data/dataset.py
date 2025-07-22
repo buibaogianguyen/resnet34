@@ -32,13 +32,22 @@ def get_transform():
 
     mean, std = mean_std(dataset, batch_size=128)
 
-    transform = transforms.Compose([
+    train_transform = transforms.Compose([
+        transforms.Resize(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomCrop(224, padding=32),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean.tolist(), std=std.tolist())
+    ])
+
+    val_transform = transforms.Compose([
         transforms.Resize(224),
         transforms.ToTensor(),
         transforms.Normalize(mean=mean.tolist(), std=std.tolist())
     ])
 
-    return transform
+    return train_transform, val_transform
 
 if __name__ == "__main__":
     transform = get_transform()
