@@ -63,6 +63,7 @@ def main():
     os.makedirs("checkpoints", exist_ok=True)
 
     stats_path = "stats.json"
+    checkpoint_path = "checkpoints/resnet34.pth"
 
     # HYPERPARAMS
     epochs = 10
@@ -75,6 +76,15 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = ResNet34(ResidualBlock, [3,4,6,3], num_classes).to(device)
+
+    if os.path.exists(checkpoint_path):
+        try:
+            state_dict = torch.load(checkpoint_path, map_location=device)
+            model.load_state_dict(state_dict)
+            print(f"Loaded weights from {checkpoint_path}")
+        except Exception as e:
+            print(f"Error loading weights from {checkpoint_path}: {e}")
+    
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.0001)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
@@ -104,7 +114,7 @@ def main():
 
             with open(stats_path, 'w') as f:
                 json.dump(best_val_acc, f, indent=4)
-            print(f'Updated {stats_path} with all-time best validation loss: {best_val_acc:.4f}')
+            print(f'Updated {stats_path} with all-time best validation accuracy: {best_val_acc:.4f}')
 
 if __name__ == "__main__":
     main()
