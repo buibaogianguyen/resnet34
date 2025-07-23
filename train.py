@@ -23,7 +23,7 @@ def train(model, train_loader, optim, criterion, epoch, device):
         outputs = model(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
-        nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
         optim.step()
 
         cur_loss += loss.item()
@@ -87,8 +87,8 @@ def main():
             print(f"Error loading weights from {checkpoint_path}: {e}")
     
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.0001)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.0005)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[60,120,160], gamma=0.2)
 
     train_data = ds.CIFAR10(root='./data', train=True, download=False, transform=train_transform)
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=4)
