@@ -96,3 +96,14 @@ This shows the performance of the model over the first 70 epochs of training in 
 </p>
 
 
+# Notes
+
+**Note**: Ensure `checkpoints/resnet34.pth` exists from training. The image must be 32x32 RGB to match CIFAR-10. If using a different size, resize it to 32x32 using an image editor or add `transforms.Resize((32, 32))` to the transform in `inference.py`.
+
+# License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details (create one if needed).
+
+# Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request with improvements or bug fixes.
