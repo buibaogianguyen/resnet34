@@ -23,19 +23,16 @@ def mean_std(dataset, batch_size):
     return mean, std
 
 def get_transform():
-    temp_transform = transforms.Compose([
-        transforms.Resize(224),
-        transforms.ToTensor(),    
-    ])
+    temp_transform = transforms.ToTensor()
 
     dataset = ds.CIFAR10(root='./data', train=True, download=True, transform=temp_transform)
 
     mean, std = mean_std(dataset, batch_size=128)
 
     train_transform = transforms.Compose([
-        transforms.Resize(224),
+        transforms.RandomErasing(scale=(0.02, 0.33), ratio=(0.33, 3.3)),
         transforms.RandomHorizontalFlip(),
-        transforms.RandomCrop(224, padding=32),
+        transforms.RandomCrop(32, padding=4),
         transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
         transforms.ToTensor(),
         transforms.Normalize(mean=mean.tolist(), std=std.tolist())
