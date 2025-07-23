@@ -30,16 +30,15 @@ def get_transform():
     mean, std = mean_std(dataset, batch_size=128)
 
     train_transform = transforms.Compose([
-        transforms.RandomErasing(scale=(0.02, 0.33), ratio=(0.33, 3.3)),
         transforms.RandomHorizontalFlip(),
         transforms.RandomCrop(32, padding=4),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
         transforms.ToTensor(),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
+        transforms.RandomErasing(p=0.3, scale=(0.02, 0.33), ratio=(0.33, 3.3)),
         transforms.Normalize(mean=mean.tolist(), std=std.tolist())
     ])
 
     val_transform = transforms.Compose([
-        transforms.Resize(224),
         transforms.ToTensor(),
         transforms.Normalize(mean=mean.tolist(), std=std.tolist())
     ])

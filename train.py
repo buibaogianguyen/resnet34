@@ -67,8 +67,8 @@ def main():
     checkpoint_path = "checkpoints/resnet34.pth"
 
     # HYPERPARAMS
-    epochs = 10
-    batch_size = 128
+    epochs = 200
+    batch_size = 256
     lr = 0.1
     num_classes = 10
     
@@ -106,7 +106,7 @@ def main():
         val_loss, val_acc = valid(model, val_loader,  optim=optimizer, criterion=criterion, epoch=epoch, device=device)
         scheduler.step()
 
-        print(f'Epoch {epoch+1}/{epochs}\nTraining loss: {train_loss}\nTraining accuracy: {train_acc}\nValidation loss:{val_loss}\nValidation accuracy: {val_acc}')
+        print(f'Epoch {epoch+1}/{epochs}\nTraining loss: {train_loss}\nTraining accuracy: {train_acc}\nValidation loss: {val_loss}\nValidation accuracy: {val_acc}')
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
